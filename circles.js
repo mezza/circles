@@ -91,7 +91,7 @@
   };
 
   Circles.prototype = {
-    VERSION: '0.0.6',
+    VERSION: '0.0.7',
 
     _generate: function() {
 
@@ -169,7 +169,7 @@
       this._svg.setAttribute('width', this._svgSize);
       this._svg.setAttribute('height', this._svgSize);
 
-      this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass);
+      this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(50, false, this._colors[2], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass);
 
       this._movingPath = this._svg.getElementsByTagName('path')[1];
 
