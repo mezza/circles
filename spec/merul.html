@@ -1,0 +1,35 @@
+<html>
+<head>
+  <title>Circles</title>
+  <style>
+    #canvas .circle {
+      display: inline-block;
+      margin: 1em;
+    }
+
+    .circles-decimals {
+      font-size: .4em;
+    }
+  </style>
+</head>
+<body>
+  <div id="canvas">
+    <div class="circle" id="circle-1"></div>
+  </div>
+
+  <script src="../circles.js"></script>
+  <script>
+    var myCircle = Circles.create({
+            id:         'circle-1',
+            value: 6,
+            maxValue: 10,
+            radius:     80,
+            width:      8,
+            number:     87,
+            text: '6-8',
+            colors:     ['#eee', '#72c02c'],
+            duration:   1000
+        })
+  </script>
+</body>
+</html>
