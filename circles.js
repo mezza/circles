@@ -27,7 +27,7 @@
                  if 0 or `null` is passed, the animation will not run
     wrpClass     - class name to apply on the generated element wrapping the whole circle.
     textClass:   - class name to apply on the generated element wrapping the text content.
-    middleValue  - where to change the 
+    middleValue  - where to change the color of the segment
 
     API:
       updateRadius(radius) - regenerates the circle with the given radius (see spec/responsive.html for an example hot to create a responsive circle)
@@ -87,6 +87,8 @@
     this._start          = -Math.PI / 180 * 90;
     this._startPrecise   = this._precise(this._start);
     this._circ           = endAngleRad - this._start;
+
+    this._midPoint       = options.middleValue === undefined ? undefined : 100 * options.middleValue / this._maxValue;
 
     this._generate().update(options.value || 0);
   };
@@ -170,7 +172,12 @@
       this._svg.setAttribute('width', this._svgSize);
       this._svg.setAttribute('height', this._svgSize);
 
-      this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass)._generatePath(33, true, this._color_luminance(this._colors[1], -0.3), this._valClass);
+
+      if (this._midPoint === undefined) {
+        this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass);
+      } else {
+        this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass)._generatePath(this._midPoint, true, this._color_luminance(this._colors[1], -0.3), this._valClass);
+      }
 
       this._movingPath = this._svg.getElementsByTagName('path')[1];
 
