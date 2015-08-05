@@ -27,6 +27,7 @@
                  if 0 or `null` is passed, the animation will not run
     wrpClass     - class name to apply on the generated element wrapping the whole circle.
     textClass:   - class name to apply on the generated element wrapping the text content.
+    middleValue  - where to change the 
 
     API:
       updateRadius(radius) - regenerates the circle with the given radius (see spec/responsive.html for an example hot to create a responsive circle)
@@ -169,7 +170,7 @@
       this._svg.setAttribute('width', this._svgSize);
       this._svg.setAttribute('height', this._svgSize);
 
-      this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(10, false, this._colors[2], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass);
+      this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass)._generatePath(33, true, this._color_luminance(this._colors[1], -0.3), this._valClass);
 
       this._movingPath = this._svg.getElementsByTagName('path')[1];
 
@@ -217,6 +218,25 @@
 
     _precise: function(value) {
       return Math.round(value * 1000) / 1000;
+    },
+
+    _color_luminance: function(hex, lum) {
+      // validate hex string
+      hex = String(hex).replace(/[^0-9a-f]/gi, '');
+      if (hex.length < 6) {
+        hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+      }
+      lum = lum || 0;
+
+      // convert to decimal and change luminosity
+      var rgb = "#", c, i;
+      for (i = 0; i < 3; i++) {
+        c = parseInt(hex.substr(i*2,2), 16);
+        c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+        rgb += ("00"+c).substr(c.length);
+      }
+
+      return rgb;
     },
 
     /*== Public methods ==*/
