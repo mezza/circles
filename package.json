@@ -1,10 +1,10 @@
 {
   "name": "circles",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Lightweight JavaScript library that generates circular graphs in SVG. Now with animation.",
   "repository": {
     "type": "git",
-    "url": "git://github.com/lugolabs/circles.git"
+    "url": "git://github.com/mezza/circles.git"
   },
   "keywords": [
     "circles",
@@ -20,7 +20,7 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/lugolabs/circles/issues"
+    "url": "https://github.com/mezza/circles/issues"
   },
   "devDependencies": {
     "grunt": "~0.4.5",
