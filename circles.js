@@ -30,13 +30,10 @@
     middleValue  - where to change the color of the segment
 
     API:
-      updateRadius(radius) - regenerates the circle with the given radius (see spec/responsive.html for an example hot to create a responsive circle)
-      updateWidth(width) - regenerates the circle with the given stroke width
-      updateColors(colors) - change colors used to draw the circle
-      update(value, duration) - update value of circle. If value is set to true, force the update of displaying
       getPercent() - returns the percentage value of the circle, based on its current value and its max value
       getValue() - returns the value of the circle
       getMaxValue() - returns the max value of the circle
+      update(value, duration) - update value of circle. If value is set to true, force the update of displaying
        getValueFromPercent(percentage) - returns the corresponding value of the circle based on its max value and given percentage
        htmlifyNumber(number, integerPartClass, decimalPartClass) - returned HTML representation of given number with given classes names applied on tags
 
@@ -64,6 +61,7 @@
     this._duration       = options.duration === undefined ? 500 : options.duration;
 
     this._value          = 0;
+    this._middleValue    = 0;
     this._maxValue       = options.maxValue || 100;
 
     this._text           = options.text === undefined ? function(value){return this.htmlifyNumber(value);} : options.text;
@@ -71,6 +69,7 @@
     this._colors         = options.colors || ['#EEE', '#F00'];
     this._svg            = null;
     this._movingPath     = null;
+    this._movingPath2    = null;
     this._wrapContainer  = null;
     this._textContainer  = null;
 
@@ -90,7 +89,11 @@
 
     this._midPoint       = options.middleValue === undefined ? undefined : 100 * options.middleValue / this._maxValue;
 
-    this._generate().update(options.value || 0);
+    if (this._midPoint === undefined) {
+      this._generate().update(options.value || 0);
+    } else {
+      this._generate().update2(options.middleValue || 0).update(options.value || 0);
+    }
   };
 
   Circles.prototype = {
@@ -112,6 +115,10 @@
     _setPercentage: function(percentage) {
       this._movingPath.setAttribute('d', this._calculatePath(percentage, true));
       this._textContainer.innerHTML	=	this._getText(this.getValueFromPercent(percentage));
+    },
+
+    _setPercentage2: function(percentage) {
+      this._movingPath2.setAttribute('d', this._calculatePath(percentage, true));
     },
 
     _generateWrapper: function() {
@@ -176,6 +183,7 @@
 
       if (this._midPoint !== undefined) {
         this._generatePath(this._midPoint, true, this._color_luminance(this._colors[1], -0.3), this._valClass);
+        this._movingPath2 = this._svg.getElementsByTagName('path')[2];
       }
 
       this._movingPath = this._svg.getElementsByTagName('path')[1];
@@ -261,31 +269,12 @@
       return html;
     },
 
-    updateRadius: function(radius) {
-      this._radius = radius;
-
-      return this._generate().update(true);
-    },
-
-    updateWidth: function(width) {
-      this._strokeWidth = width;
-
-      return this._generate().update(true);
-    },
-
-    updateColors: function(colors) {
-      this._colors = colors;
-
-      var paths = this._svg.getElementsByTagName('path');
-
-      paths[0].setAttribute('stroke', colors[0]);
-      paths[1].setAttribute('stroke', colors[1]);
-
-      return this;
-    },
-
     getPercent: function() {
       return (this._value * 100) / this._maxValue;
+    },
+
+    getPercent2: function() {
+      return (this._middleValue * 100) / this._maxValue;
     },
 
     getValueFromPercent: function(percentage) {
@@ -359,7 +348,67 @@
       })(Date.now());
 
       return this;
+    },
+
+    update2: function(value, duration) {
+      if (value === true) {//Force update with current value
+        this._setPercentage2(this.getPercent2());
+        return this;
+      }
+
+      if (this._middleValue == value || isNaN(value)) return this;
+      if (duration === undefined) duration = this._duration;
+
+      var self          = this,
+          oldPercentage = self.getPercent2(),
+          delta         = 1,
+          newPercentage, isGreater, steps, stepDuration;
+
+      this._middleValue = Math.min(this._maxValue, Math.max(0, value));
+
+      if (!duration) {//No duration, we can't skip the animation
+        this._setPercentage2(this.getPercent2());
+        return this;
+      }
+
+      newPercentage   = self.getPercent2();
+      isGreater       = newPercentage > oldPercentage;
+
+      delta           += newPercentage % 1; //If new percentage is not an integer, we add the decimal part to the delta
+      steps           = Math.floor(Math.abs(newPercentage - oldPercentage) / delta);
+      stepDuration    = duration / steps;
+
+
+      (function animate(lastFrame) {
+        if (isGreater)
+         oldPercentage += delta;
+        else
+         oldPercentage -= delta;
+
+        if ((isGreater && oldPercentage >= newPercentage) || (!isGreater && oldPercentage <= newPercentage))
+        {
+          requestAnimFrame(function(){ self._setPercentage2(newPercentage); });
+          return;
+        }
+
+        requestAnimFrame(function() { self._setPercentage2(oldPercentage); });
+
+        var now     = Date.now(),
+          deltaTime = now - lastFrame;
+
+        if (deltaTime >= stepDuration) {
+          animate(now);
+        } else {
+          setTimeout(function() {
+            animate(Date.now());
+          }, stepDuration - deltaTime);
+        }
+
+      })(Date.now());
+
+      return this;
     }
+
   };
 
   Circles.create = function(options) {
