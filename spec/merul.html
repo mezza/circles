@@ -15,6 +15,7 @@
 <body>
   <div id="canvas">
     <div class="circle" id="circle-1"></div>
+    <div class="circle" id="circle-2"></div>
   </div>
 
   <script src="../circles.js"></script>
@@ -30,7 +31,19 @@
             text: '6-8',
             colors:     ['#eee', '#72c02c'],
             duration:   1000
-        })
+        });
+    var myCircle = Circles.create({
+        id:         'circle-2',
+        value: 6.5,
+        maxValue: 10,
+        radius:     80,
+        width:      8,
+        number:     87,
+        text: '6.5',
+        colors:     ['#eee', '#72c02c'],
+        duration:   1000
+    });
+
   </script>
 </body>
 </html>

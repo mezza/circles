@@ -172,11 +172,10 @@
       this._svg.setAttribute('width', this._svgSize);
       this._svg.setAttribute('height', this._svgSize);
 
+      this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass);
 
-      if (this._midPoint === undefined) {
-        this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass);
-      } else {
-        this._generatePath(100, false, this._colors[0], this._maxValClass)._generatePath(1, true, this._colors[1], this._valClass)._generatePath(this._midPoint, true, this._color_luminance(this._colors[1], -0.3), this._valClass);
+      if (this._midPoint !== undefined) {
+        this._generatePath(this._midPoint, true, this._color_luminance(this._colors[1], -0.3), this._valClass);
       }
 
       this._movingPath = this._svg.getElementsByTagName('path')[1];
